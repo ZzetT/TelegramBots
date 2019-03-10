@@ -142,16 +142,6 @@
             <version>${json.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>${httpcompontents.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpmime</artifactId>
-            <version>${httpcompontents.version}</version>
-        </dependency>
-        <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>${commonio.version}</version>
@@ -175,6 +165,12 @@
             <version>2.0.2-beta</version>
             <scope>test</scope>
         </dependency>
+        
+        <dependency>
+    		<groupId>org.eclipse.jetty</groupId>
+    		<artifactId>jetty-client</artifactId>
+    		<version>9.4.14.v20181114</version>
+		</dependency>
     </dependencies>
 
     <build>
