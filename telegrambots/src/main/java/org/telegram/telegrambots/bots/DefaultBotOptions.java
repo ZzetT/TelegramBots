@@ -2,6 +2,7 @@ package org.telegram.telegrambots.bots;
 
 import java.util.List;
 
+import org.eclipse.jetty.client.HttpClient;
 import org.telegram.telegrambots.meta.ApiConstants;
 import org.telegram.telegrambots.meta.generics.BotOptions;
 import org.telegram.telegrambots.updatesreceivers.ExponentialBackOff;
@@ -21,6 +22,7 @@ public class DefaultBotOptions implements BotOptions {
 	private ProxyType proxyType;
 	private String proxyHost;
 	private int proxyPort;
+	private HttpClient httpClient;
 
 	public enum ProxyType {
 		NO_PROXY, HTTP, SOCKS4, SOCKS5
@@ -102,4 +104,13 @@ public class DefaultBotOptions implements BotOptions {
 	public void setProxyPort(int proxyPort) {
 		this.proxyPort = proxyPort;
 	}
+
+	public HttpClient getHttpClient() {
+		return httpClient;
+	}
+
+	public void setHttpClient(HttpClient httpClient) {
+		this.httpClient = httpClient;
+	}
+
 }

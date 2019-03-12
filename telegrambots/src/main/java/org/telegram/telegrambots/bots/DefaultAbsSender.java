@@ -73,14 +73,17 @@ public abstract class DefaultAbsSender extends AbsSender {
 		this.exe = Executors.newFixedThreadPool(options.getMaxThreads());
 		this.options = options;
 
-		httpclient = new HttpClient(new SslContextFactory());
-		httpclient.setConnectTimeout(SOCKET_TIMEOUT);
+		httpclient = options.getHttpClient();
+		if (httpclient == null) {
+			httpclient = new HttpClient(new SslContextFactory());
+			httpclient.setConnectTimeout(SOCKET_TIMEOUT);
 
-		try {
-			httpclient.start();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			try {
+				httpclient.start();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 
