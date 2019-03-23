@@ -20,12 +20,10 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.json.JSONException;
-import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.meta.ApiConstants;
 import org.telegram.telegrambots.meta.api.methods.updates.GetUpdates;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
-import org.telegram.telegrambots.meta.generics.BotOptions;
 import org.telegram.telegrambots.meta.generics.BotSession;
 import org.telegram.telegrambots.meta.generics.LongPollingBot;
 import org.telegram.telegrambots.meta.generics.UpdatesHandler;
@@ -52,7 +50,6 @@ public class DefaultBotSession implements BotSession {
 	private LongPollingBot callback;
 	private String token;
 	private int lastReceivedUpdate = 0;
-	private DefaultBotOptions options;
 	private UpdatesSupplier updatesSupplier;
 
 	@Inject
@@ -79,7 +76,7 @@ public class DefaultBotSession implements BotSession {
 	}
 
 	@Override
-	public synchronized void stop() {
+	public void stop() {
 		if (!running) {
 			throw new IllegalStateException("Session already stopped");
 		}
@@ -104,14 +101,6 @@ public class DefaultBotSession implements BotSession {
 	}
 
 	@Override
-	public void setOptions(BotOptions options) {
-		if (this.options != null) {
-			throw new InvalidParameterException("BotOptions has already been set");
-		}
-		this.options = (DefaultBotOptions) options;
-	}
-
-	@Override
 	public void setToken(String token) {
 		if (this.token != null) {
 			throw new InvalidParameterException("Token has already been set");
@@ -128,7 +117,7 @@ public class DefaultBotSession implements BotSession {
 	}
 
 	@Override
-	public synchronized boolean isRunning() {
+	public boolean isRunning() {
 		return running;
 	}
 
@@ -148,11 +137,7 @@ public class DefaultBotSession implements BotSession {
 		public synchronized void start() {
 			httpclient = new HttpClient(new SslContextFactory());
 
-			exponentialBackOff = options.getExponentialBackOff();
-
-			if (exponentialBackOff == null) {
-				exponentialBackOff = new ExponentialBackOff();
-			}
+			exponentialBackOff = new ExponentialBackOff();
 
 			httpclient.setConnectTimeout(SOCKET_TIMEOUT);
 
@@ -163,18 +148,6 @@ public class DefaultBotSession implements BotSession {
 				e.printStackTrace();
 			}
 			super.start();
-		}
-
-		@Override
-		public void interrupt() {
-			if (httpclient != null) {
-				try {
-					httpclient.stop();
-				} catch (Exception e) {
-					BotLogger.warn(LOGTAG, e);
-				}
-			}
-			super.interrupt();
 		}
 
 		@Override
@@ -227,14 +200,10 @@ public class DefaultBotSession implements BotSession {
 			GetUpdates request = new GetUpdates().setLimit(100).setTimeout(ApiConstants.GETUPDATES_TIMEOUT)
 					.setOffset(lastReceivedUpdate + 1);
 
-			if (options.getAllowedUpdates() != null) {
-				request.setAllowedUpdates(options.getAllowedUpdates());
-			}
-
-			String url = options.getBaseUrl() + token + "/" + GetUpdates.PATH;
+			String url = ApiConstants.BASE_URL + token + "/" + GetUpdates.PATH;
 			Request httpPost = httpclient.POST(url);
 			httpPost.header("charset", StandardCharsets.UTF_8.name());
-			httpPost.content(new StringContentProvider(objectMapper.writeValueAsString(request)), "application/json"); 
+			httpPost.content(new StringContentProvider(objectMapper.writeValueAsString(request)), "application/json");
 
 			try {
 				ContentResponse response = httpPost.send();

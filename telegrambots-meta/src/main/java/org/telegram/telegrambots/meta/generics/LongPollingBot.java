@@ -40,13 +40,6 @@ public interface LongPollingBot {
 	String getBotToken();
 
 	/**
-	 * Gets options for current bot
-	 * 
-	 * @return BotOptions object with options information
-	 */
-	BotOptions getOptions();
-
-	/**
 	 * Called when the BotSession is being closed
 	 */
 	default void onClosing() {

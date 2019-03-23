@@ -1,7 +1,5 @@
 package org.telegram.telegrambots.bots;
 
-import static org.telegram.telegrambots.Constants.SOCKET_TIMEOUT;
-
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.MalformedURLException;
@@ -22,7 +20,7 @@ import org.eclipse.jetty.client.util.InputStreamContentProvider;
 import org.eclipse.jetty.client.util.MultiPartContentProvider;
 import org.eclipse.jetty.client.util.PathContentProvider;
 import org.eclipse.jetty.client.util.StringContentProvider;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.telegram.telegrambots.meta.ApiConstants;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.groupadministration.SetChatPhoto;
 import org.telegram.telegrambots.meta.api.methods.send.SendAnimation;
@@ -64,27 +62,13 @@ public abstract class DefaultAbsSender extends AbsSender {
 
 	protected final ExecutorService exe;
 	private final ObjectMapper objectMapper = new ObjectMapper();
-	private final DefaultBotOptions options;
 	private volatile HttpClient httpclient;
 
-	protected DefaultAbsSender(DefaultBotOptions options) {
+	protected DefaultAbsSender(HttpClient httpclient) {
 		super();
 
-		this.exe = Executors.newFixedThreadPool(options.getMaxThreads());
-		this.options = options;
-
-		httpclient = options.getHttpClient();
-		if (httpclient == null) {
-			httpclient = new HttpClient(new SslContextFactory());
-			httpclient.setConnectTimeout(SOCKET_TIMEOUT);
-
-			try {
-				httpclient.start();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+		this.exe = Executors.newFixedThreadPool(1);
+		this.httpclient = httpclient;
 	}
 
 	/**
@@ -93,10 +77,6 @@ public abstract class DefaultAbsSender extends AbsSender {
 	 * @return Token of the bot
 	 */
 	public abstract String getBotToken();
-
-	public final DefaultBotOptions getOptions() {
-		return options;
-	}
 
 	// Send Requests
 
@@ -897,7 +877,7 @@ public abstract class DefaultAbsSender extends AbsSender {
 	}
 
 	public String getBaseUrl() {
-		return options.getBaseUrl() + getBotToken() + "/";
+		return ApiConstants.BASE_URL + getBotToken() + "/";
 	}
 
 	private void assertParamNotNull(Object param, String paramName) throws TelegramApiException {

@@ -1,5 +1,6 @@
 package org.telegram.telegrambots.bots;
 
+import org.eclipse.jetty.client.HttpClient;
 import org.telegram.telegrambots.meta.ApiContext;
 import org.telegram.telegrambots.meta.generics.LongPollingBot;
 
@@ -12,11 +13,11 @@ import org.telegram.telegrambots.meta.generics.LongPollingBot;
  */
 public abstract class TelegramLongPollingBot extends DefaultAbsSender implements LongPollingBot {
 	public TelegramLongPollingBot() {
-		this(ApiContext.getInstance(DefaultBotOptions.class));
+		this(ApiContext.getInstance(HttpClient.class));
 	}
 
-	public TelegramLongPollingBot(DefaultBotOptions options) {
-		super(options);
+	public TelegramLongPollingBot(HttpClient httpclient) {
+		super(httpclient);
 	}
 
 	@Override

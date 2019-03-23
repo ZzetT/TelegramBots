@@ -28,7 +28,6 @@ public class TelegramBotsApi {
 	public BotSession registerBot(LongPollingBot bot) throws TelegramApiRequestException {
 		BotSession session = ApiContext.getInstance(BotSession.class);
 		session.setToken(bot.getBotToken());
-		session.setOptions(bot.getOptions());
 		session.setCallback(bot);
 		session.start();
 		return session;
